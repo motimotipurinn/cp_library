@@ -1,0 +1,78 @@
+double eps = 1e-10;
+
+//誤差を考慮して足し算を行う
+double add(double a, double b) {
+  if (abs(a + b) < eps * (abs(a) + abs(b))) return 0;
+  return a + b;
+}
+
+//二次元ベクトル構造体
+struct P {
+  double x, y;
+  P() {}
+  P(double x, double y) : x(x), y(y) {}
+  P operator+(P p) { return P(add(x, p.x), add(y, p.y)); }
+  P operator-(P p) { return P(add(x, -p.x), add(y, -p.y)); }
+  P operator*(double d) { return P(x * d, y * d); }
+  double dot(P p) {  //内積
+    return add(x * p.x, y * p.y);
+  }
+  double det(P p) {  //外積
+    return add(x * p.y, -y * p.x);
+  }
+};
+
+//辞書順で比較
+bool cmp_x(const P &p, const P &q) {
+  if (p.x != q.x) {
+    return p.x < q.x;
+  }
+  return p.y < q.y;
+}
+
+//凸包を求める
+vector<P> convex_hull(vector<P> &ps, int n) {
+  sort(ps.begin(), ps.end(), cmp_x);
+  int k = 0;            //凸包の頂点数
+  vector<P> qs(n * 2);  //構築中の凸包
+  //下側凸包の作成
+  for (int i = 0; i < n; i++) {
+    while (k > 1 && (qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]) <= 0) k--;
+    qs[k++] = ps[i];
+  }
+  //上側凸包の作成
+  for (int i = n - 2, t = k; i >= 0; i--) {
+    while (k > t && (qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]) <= 0) k--;
+    qs[k++] = ps[i];
+  }
+  qs.resize(k - 1);
+  return qs;
+}
+//距離
+double dist(P p, P q) { return sqrt((p - q).dot(p - q)); }
+//線分p1-p2上に手㎣qがあるか判定
+bool on_seg(P p1, P p2, P q) {
+  return (p1 - q).det(p2 - q) == 0 && (p1 - q).dot(p2 - q) <= 0;
+}
+//直線p1-p2と直線q1-q2との交点
+P intersection(P p1, P p2, P q1, P q2) {
+  return p1 + (p2 - p1) * ((q2 - q1).det(q1 - p1) / (q2 - q1).det(p2 - p1));
+}
+//線分と線分が交点をもつか判定する
+/*
+P p1, p2, p3, p4;
+  cin >> p1.x >> p1.y >> p2.x >> p2.y >> p3.x >> p3.y >> p4.x >> p4.y;
+  bool a = false;
+  if ((p1 - p2).det(p3 - p4) == 0) {
+    a = on_seg(p1, p2, p3) || on_seg(p1, p2, p4) || on_seg(p3, p4, p1) ||
+        on_seg(p3, p4, p2);
+  } else {
+    P r = intersection(p1, p2, p3, p4);
+    a = on_seg(p1, p2, r) && on_seg(p3, p4, r);
+  }
+  if (a) {
+    cout << "Yes" << endl;
+  } else {
+    cout << "No" << endl;
+  }
+*/

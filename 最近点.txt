@@ -1,0 +1,21 @@
+using pdd = pair<long double, long double>;
+bool compare_y(pdd a, pdd b) { return a.second < b.second; }
+ld closest_pair(pdd *a, int n) {
+  if (n <= 1) return INF;
+  int m = n / 2;
+  ld x = a[m].first;
+  ld d = min(closest_pair(a, m), closest_pair(a + m, n - m));
+  inplace_merge(a, a + m, a + n, compare_y);
+  vector<pdd> b;
+  rep(i, n) {
+    if (fabs(a[i].first - x) >= d) continue;
+    rep(j, b.size()) {
+      ld dx = a[i].first - b[b.size() - j - 1].first;
+      ld dy = a[i].second - b[b.size() - j - 1].second;
+      if (dy >= d) break;
+      chmin(d, sqrt(dx * dx + dy * dy));
+    }
+    b.push_back(a[i]);
+  }
+  return d;
+}

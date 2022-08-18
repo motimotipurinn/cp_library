@@ -1,0 +1,32 @@
+struct Edge {
+  int to;
+  int w;
+  Edge(int to, int w) : to(to), w(w) {}
+};
+using GRAPH = vector<vector<Edge>>;
+int pre[1000000];
+vector<int> dijkstra(GRAPH G,int N,int s) {
+  priority_queue<pll, vector<pll>, greater<pll>> que;
+  vin dist(N,INF);
+  dist[s] = 0;
+  que.push(MP(0, s));
+  while (!que.empty()) {
+    int v = que.top().second;
+    int d = que.top().first;
+    que.pop();
+    if (d > dist[v]) continue;
+    for (auto e : G[v]) {
+      if (chmin(dist[e.to], dist[v] + e.w)) {
+        que.push(MP(dist[e.to], e.to));
+        pre[e.to] = v;
+      }
+    }
+  }
+  return dist;
+}
+vector<int> get_path(int t) {
+  vector<int> path;
+  for (; t = -1; t = pre[t]) path.push_back(t);
+  reverse(path.begin(), path.end());
+  return path;
+}

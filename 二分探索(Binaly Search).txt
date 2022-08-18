@@ -1,0 +1,22 @@
+ll BinarySearch(vector<ll> &v, ll find) {
+  // key: 検索対象の値
+  ll right, left;
+  left = 0;
+  right = v.size();
+
+  while (left < right) {
+    ll mid = (left + right) / 2;
+    if (v[mid] == find) {
+      return mid;
+    } else if (find < v[mid]) {
+      // 半分より下
+      right = mid;
+    } else if (v[mid] < find) {
+      // 半分より上
+      // 必要ないが，分かりやすいように条件を記述してある．
+      left = mid + 1;
+    }
+  }
+  // key が配列の中に見つからない場合
+  return -1;
+}

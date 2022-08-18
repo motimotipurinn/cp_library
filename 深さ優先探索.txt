@@ -1,0 +1,10 @@
+int pre2[200010];
+vector<bool> seen;
+void dfs(const Graph &G, int v) {
+  seen[v] = true;
+  for (auto nv : G[v]) {
+    if (seen[nv]) continue;
+    pre2[nv] = v;
+    dfs(G, nv);
+  }
+}

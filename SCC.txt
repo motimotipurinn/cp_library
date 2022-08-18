@@ -1,0 +1,49 @@
+struct SCC {
+  int n;
+  vvin G, rG;
+  vin order, component;
+  vector<bool> used;
+  void dfs(int v) {
+    used[v] = 1;
+    for (auto nv : G[v]) {
+      if (!used[nv]) dfs(nv);
+    }
+    order.push_back(v);
+  }
+  void rdfs(int v, int k) {
+    component[v] = k;
+    for (auto nv : rG[v]) {
+      if (component[nv] < 0) rdfs(nv, k);
+    }
+  }
+  SCC(vvin &_G) {
+    n = _G.size();
+    G = _G;
+    rG.resize(n);
+    component.assign(n, -1);
+    used.resize(n);
+    rep(v, n) {
+      for (auto nv : G[v]) rG[nv].push_back(v);
+    }
+    rep(v, n) if (!used[v]) dfs(v);
+    int k = 0;
+    reverse(ALL(order));
+    for (auto v : order)
+      if (component[v] == -1) rdfs(v, k), k++;
+  }
+  bool is_same(int u, int v) { return component[u] == component[v]; }
+  vvin rebuild() {
+    int N = *max_element(ALL(component)) + 1;
+    vvin rebuildedG(N);
+    set<pll> connected;
+    rep(v, N) {
+      for (auto nv : G[v]) {
+        if (component[v] != component[nv] and !connected.count({v, nv})) {
+          connected.insert({v, nv});
+          rebuildedG[component[v]].push_back(component[nv]);
+        }
+      }
+    }
+    return rebuildedG;
+  }
+};

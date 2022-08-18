@@ -1,0 +1,68 @@
+const int N_MAX = 2000000;
+ll spf[N_MAX];  // smallest prime factors
+void prepare_factorize() {
+  rep(i, N_MAX) spf[i] = i;
+  for (int p = 2; p * p <= N_MAX; p++) {
+    for (int i = p; i < N_MAX; i += p) {
+      if (spf[i] == i) spf[i] = p;
+    }
+  }
+}
+
+// 素因数分解
+// その素因数が何個あるかのmapを返す
+map<ll, ll> factorize_fast(ll n) {
+  map<ll, ll> mp;
+  while (n != 1) {
+    ll p = spf[n];
+    mp[p]++;
+    n /= p;
+  }
+  return mp;
+}
+
+// 約数の種類数
+// 6 => 1, 2, 3, 6なので4
+ll yaku(ll n) {
+  auto mp = factorize_fast(n);
+  ll ret = 1;
+  for (auto pa : mp) {
+    ret *= (pa.second + 1);
+  }
+  return ret;
+}
+
+ll f(ll v) { return v - yaku(v); }
+void dfsd(ll cur_idx, ll cur_val, vin &Y,
+          vector<pll> &mp  // (value, count)
+) {
+  ll N = mp.size();
+  if (cur_idx == N) {
+    // 値が完成
+    Y.push_back(cur_val);
+    return;
+  }
+  ll v = mp[cur_idx].first;
+  ll c = mp[cur_idx].second;
+  // p乗を全通り試す (0, ..., p乗)
+  ll mul = 1;
+  rep(p, c + 1) {
+    dfsd(cur_idx + 1, cur_val * mul, Y, mp);
+    mul *= v;
+  }
+  return;
+}
+
+// 約数一覧 O(nlogn)
+vin calc_devisors_fast(ll a) {
+  vin Y;  // 戻り値（入れ物）
+
+  auto mp = factorize_fast(a);
+  vector<pll> V;
+  for (auto pa : mp) {
+    V.push_back(pa);
+  }
+
+  dfsd(0, 1, Y, V);
+  return Y;
+}

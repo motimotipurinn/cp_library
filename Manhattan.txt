@@ -1,0 +1,29 @@
+struct Manhattan {
+  // vin X, Y;
+  in max_x = -INF, max_y = -INF, min_x = INF, min_y = INF;
+  Manhattan(vin &a, vin &b) {
+    int N = a.size();
+    // X.resize(N);
+    // Y.resize(N);
+    rep(i, N) {
+      in x, y;
+      in A = a[i], B = b[i];
+      x = A - B, y = A + B;
+      // X[i] = x;
+      // Y[i] = y;
+      chmax(max_x, x);
+      chmax(max_y, y);
+      chmin(min_x, x);
+      chmin(min_y, y);
+    }
+  }
+  int query(int p, int q) {
+    in P = p - q, Q = p + q;
+    in ans_max = -INF;
+    chmax(ans_max, abs(P - min_x));
+    chmax(ans_max, abs(P - max_x));
+    chmax(ans_max, abs(Q - min_y));
+    chmax(ans_max, abs(Q - max_y));
+    return ans_max;
+  }
+};

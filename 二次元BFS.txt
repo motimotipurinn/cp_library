@@ -1,0 +1,24 @@
+vvin BFS(vvin &v, int s_x, int s_y) {
+    vvin dist(v.size(), vin(v[0].size(), INF));
+    dist[s_x][s_y] = 0;
+    queue<pll> que;
+    que.push({s_x, s_y});
+    while (!que.empty()) {
+        pll p = que.front();
+        que.pop();
+        int x = p.first, y = p.second;
+        rep(i, 4) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            if (0 <= nx && nx < v.size() && 0 <= ny && ny < v[0].size()) {
+                if (v[nx][ny] != v[x][y]) {
+                    if (dist[nx][ny] > dist[x][y] + 1) {
+                        dist[nx][ny] = dist[x][y] + 1;
+                        que.push({nx, ny});
+                    }
+                }
+            }
+        }
+    }
+    return dist;
+};

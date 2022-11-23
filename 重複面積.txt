@@ -1,0 +1,52 @@
+template <typename T> vector<T> compress_2(vector<T> &C1, vector<T> &C2) {
+    vector<T> vals;
+    int N = (int)C1.size();
+    for (int i = 0; i < N; i++) {
+        for (T d = 0; d < 1; d++) {
+            T tc1 = C1[i] + d;
+            T tc2 = C2[i] + d;
+            vals.push_back(tc1);
+            vals.push_back(tc2);
+        }
+    }
+    sort(vals.begin(), vals.end());
+    vals.erase(unique(vals.begin(), vals.end()), vals.end());
+    for (int i = 0; i < N; i++) {
+        C1[i] = lower_bound(vals.begin(), vals.end(), C1[i]) - vals.begin();
+        C2[i] = lower_bound(vals.begin(), vals.end(), C2[i]) - vals.begin();
+    }
+    return vals;
+}
+
+int Overlapping_area_sum(int N, vin X1, vin Y1, vin X2, vin Y2, int border) {
+    int sum = 0;
+    vin X = compress_2(X1, X2);
+    vin Y = compress_2(Y1, Y2);
+    int w = X.size();
+    int h = Y.size();
+    vvin G(w, vin(h, 0));
+    rep(i, N) {
+        G[X1[i]][Y1[i]]++;
+        G[X2[i]][Y2[i]]++;
+        G[X1[i]][Y2[i]]--;
+        G[X2[i]][Y1[i]]--;
+    }
+    for (int x = 1; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+            G[x][y] += G[x - 1][y];
+        }
+    }
+    for (int x = 0; x < w; x++) {
+        for (int y = 1; y < h; y++) {
+            G[x][y] += G[x][y - 1];
+        }
+    }
+    rep(x, w - 1) {
+        rep(y, h - 1) {
+            if (G[x][y]) {
+                sum += (X[x + 1] - X[x]) * (Y[y + 1] - Y[y]);
+            }
+        }
+    }
+    return sum;
+}

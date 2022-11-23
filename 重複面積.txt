@@ -43,7 +43,7 @@ int Overlapping_area_sum(int N, vin X1, vin Y1, vin X2, vin Y2, int border) {
     }
     rep(x, w - 1) {
         rep(y, h - 1) {
-            if (G[x][y]) {
+            if (G[x][y]>=border)) {
                 sum += (X[x + 1] - X[x]) * (Y[y + 1] - Y[y]);
             }
         }

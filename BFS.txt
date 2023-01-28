@@ -1,0 +1,17 @@
+vector<int> BFS(Graph &G, int N, int s) {
+    vector<int> dist(N, -1);
+    queue<int> que;
+    dist[0] = 0;
+    que.push(0);
+    while (!que.empty()) {
+        int v = que.front();
+        que.pop();
+        for (int nv : G[v]) {
+            if (dist[nv] != -1)
+                continue;
+            dist[nv] = dist[v] + 1;
+            que.push(nv);
+        }
+    }
+    return dist;
+}
